@@ -70,13 +70,16 @@ class AdaSeqTextLoggerHook(TextLoggerHook):
 
     def _dump_log(self, log_dict):
         # dump log in json format
-        json_log = OrderedDict()
-        for k, v in log_dict.items():
-            json_log[k] = (
-                v if k in self.ignore_rounding_keys else self._round_float(v, self.rounding_digits)
-            )
+        try:
+            json_log = OrderedDict()
+            for k, v in log_dict.items():
+                json_log[k] = (
+                    v if k in self.ignore_rounding_keys else self._round_float(v, self.rounding_digits)
+                )
 
-        if is_master():
-            with open(self.json_log_path, 'a+') as f:
-                json.dump(json_log, f, cls=EnhancedEncoder, ensure_ascii=False)
-                f.write('\n')
+            if is_master():
+                with open(self.json_log_path, 'a+') as f:
+                    json.dump(json_log, f, cls=EnhancedEncoder, ensure_ascii=False)
+                    f.write('\n')
+        except:
+            pass
